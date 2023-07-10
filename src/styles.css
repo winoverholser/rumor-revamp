@@ -1,0 +1,87 @@
+:root {
+    --window-height: 100%; }
+  
+  html {
+    font-size: 10px;
+    font-family: 'pilat', helvetica, sans-serif; }
+  
+  html, *, *:after, *:before {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    outline: none; }
+  
+  h1, .h1 {
+    font-size: 2.5rem;
+    font-family: 'pilat';
+    font-weight: bold;
+    line-height: 1; }
+  
+  p, .p {
+    font-size: 1.5rem;
+    font-family: 'pilat';
+    font-weight: normal;
+    line-height: 1.3; }
+  
+  a {
+    color: black;
+    text-decoration: none;
+    outline: none; }
+    a:hover {
+      cursor: pointer; }
+  
+  p a {
+    color: black;
+    text-shadow: 0px 0px 6px rgba(0, 0, 255, 0.4); }
+    p a:hover {
+      color: black;
+      text-shadow: 0px 0px 12px rgba(0, 0, 255, 0.6); }
+
+/**** TRAY MENU ELEMENTS ****/
+
+        /** TRAY TITLE **/
+
+#trayTitle {
+    max-height: 200px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.title_wide {
+    width: 100%;
+    max-height: 200px;
+}
+    @media screen and (max-width: 768px) {
+        .title_wide {
+        display: none;
+        }
+    }
+
+.title_narrow {
+    width: 100%;
+    height: 150px;
+}  
+    @media screen and (min-width: 769px) {
+        .title_narrow {
+        display: none;
+        }
+    }
+
+        /** TRAY ICONS **/
+
+#trayContainer {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .trayMenu {
+    text-align: center;
+    text-transform: uppercase;
+    margin: 10px;
+  }
+  
+  .trayMenu img {
+    width: 100px;
+    height: 100px;
+  }
