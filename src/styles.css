@@ -52,21 +52,22 @@
     width: 100%;
     max-height: 200px;
 }
-    @media screen and (max-width: 768px) {
-        .title_wide {
-        display: none;
-        }
-    }
 
 .title_narrow {
     width: 100%;
     height: 150px;
-}  
-    @media screen and (min-width: 769px) {
-        .title_narrow {
-        display: none;
-        }
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    /** disabled for now, swap block and none to enable **/
+    .title_wide {
+        display: block;
     }
+    .title_narrow {
+        display: none;
+    }
+}
 
         /** TRAY ICONS **/
 
