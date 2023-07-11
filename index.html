@@ -10,15 +10,21 @@
   <body>
     <main>
     <div id="tray">
-        <div id="trayTitle">
-            <img class="title_wide" src="img/ambigram-horizontal.svg">
-            <img class="title_narrow" src="img/ambigram-r.svg">
+        <div id="trayTicker">
+            <!-- Ticker is dynamic -->
+            <p>tk ticker tk</p>
+        </div>
+        <div id="trayTitle" onclick="toggleTray()">
+            <img id="titleText" src="img/ambigram-horizontal.svg">
         </div>
         <div id="trayContainer">
-            <p>Spreading rumors...</p>
+            <!-- Icons are dynamic -->
+            <p>Spreading Rumors...</p>
         </div>
     </div>
     </main>
+
+    <iframe id="backgroundIframe" src="loading.html"></iframe>
 
     <script src="src/script.js"></script>
   </body>
