@@ -1,12 +1,12 @@
 @font-face {
     font-family: 'pilat';
-    src: url('/fonts/Pilat-Book.woff');
+    src: url('fonts/Pilat-Book.woff');
 	font-weight: 500;
 }
 
 @font-face {
     font-family: 'pilat';
-    src: url('/fonts/PilatExtended-Bold.woff');
+    src: url('fonts/PilatExtended-Bold.woff');
 	font-weight: 800;
 }
 
