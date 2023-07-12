@@ -1,13 +1,61 @@
-//SANITY
+// SANITY PROJECT
 
 let PROJECT_ID = "1u261ldt";
 let DATASET = "production";
-let QUERY = encodeURIComponent('*[_type == "iFrameLink"]{title,url,thumb,"assetUrl": thumb.asset->url}');
 
-let URL = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${QUERY}`;
+let queryTicker = encodeURIComponent('*[_type == "ticker"]{tickerText}');
+let urlTicker = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${queryTicker}`;
 
-// FETCH FROM CONTENT LAKE
-fetch(URL)
+let queryIcon = encodeURIComponent('*[_type == "iFrameLink"]{title,url,thumb,"assetUrl": thumb.asset->url}');
+let urlIcon = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${queryIcon}`;
+
+// SHUFFLE
+
+function shuffleArray(array) {
+    // Fisher-Yates shuffle algorithm
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// ***** TICKER *****
+
+fetch(urlTicker)
+    .then((res) => res.json())
+    .then(({ result }) => {
+
+        const tickerTray = document.getElementById("feed");
+        tickerTray.innerHTML = "";
+        let tickerWidth = 0;
+
+        if (result.length > 0) {
+            result = shuffleArray(result);
+            result.forEach((ticker) => {
+                // CREATE SPAN
+                const container = document.createElement("span");
+                container.className = "feedItem";
+                // ADD TEXT
+                const rumor = document.createElement("p");
+                rumor.innerText = ticker?.tickerText
+                container.appendChild(rumor);
+                tickerTray.appendChild(container);
+                // ADD UP LENGTH
+                tickerWidth += container.offsetWidth;
+            })
+            // TRANSLATE LEFT
+            tickerTray.style.width = `${tickerWidth}px`;
+            const duration = tickerWidth * .008;
+            tickerTray.style.animationDuration = `${duration}s`;
+        }
+    })
+    .catch((err) => console.error(err));
+  
+
+// ***** ICONS *****
+
+fetch(urlIcon)
     .then((res) => res.json())
     .then(({ result }) => {
 
@@ -15,6 +63,7 @@ fetch(URL)
         iconTray.innerHTML = "";
 
         if (result.length > 0) {
+            result = shuffleArray(result);
             result.forEach((iFrameLink) => {
                 // CREATE DIV
                 const container = document.createElement("div");
@@ -31,14 +80,22 @@ fetch(URL)
                 icon.className = "menuIcon";
                 container.appendChild(icon);
 
-                /* // CREATE TITLE
-                const title = document.createElement("p");
-                title.textContent = iFrameLink?.title;
-                container.appendChild(title); */
+                /*
+                    // CREATE TITLE
+                    const title = document.createElement("p");
+                    title.textContent = iFrameLink?.title;
+                    container.appendChild(title);
+                */
 
                 // CLICK EVENT LISTENER
                 container.addEventListener("click", () => {
                     const iframe = document.getElementById("backgroundIframe");
+                    const loadingScreen = document.getElementById("loadingScreen");
+                    // loading screen
+                    loadingScreen.style.display = "flex";
+                    iframe.onload = () => {
+                        loadingScreen.style.display = "none";
+                    };
                     iframe.src = iFrameLink?.url;
                     toggleTray();
                 });
@@ -72,6 +129,10 @@ function iconMagic() {
 
 iconMagic();
 
+
+
+// ***** TRAY *****
+
 // RETRACT TRAY
 function toggleTray() {
     const tray = document.getElementById("tray");
@@ -86,17 +147,19 @@ function toggleTray() {
         tray.style.transform = `translateY(${translateHeight}px)`;
     } else {
         tray.style.transform = "translateY(0)";
-        /* // bounce on landing
-        setTimeout(() => {
-            const bounceKeyframes = [
-                { transform: `translateY(0px)` },
-                { transform: `translateY(5px)` },
-                { transform: `translateY(0px)` }
-            ];
-        tray.animate(bounceKeyframes, {
-            duration: 200
-        });
-        }, 500); */
+        /*
+            // bounce on landing
+            setTimeout(() => {
+                const bounceKeyframes = [
+                    { transform: `translateY(0px)` },
+                    { transform: `translateY(5px)` },
+                    { transform: `translateY(0px)` }
+                ];
+            tray.animate(bounceKeyframes, {
+                duration: 200
+            });
+            }, 500);
+        */
     }
 }
 
@@ -114,4 +177,3 @@ window.addEventListener("resize", function() {
         tray.style.transform = `translateY(${translateHeight}px)`;
     }
 });
-

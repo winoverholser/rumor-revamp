@@ -66,18 +66,44 @@
         /** TICKER **/
 
 #trayTicker {
+    position: relative;
     width: 100%;
-    height: 100%;
     height: 5rem;
     color: white;
     background-color: black;
     vertical-align: middle;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
-#trayTicker p {
+#feed {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    white-space: nowrap;
+    animation: tickerTick linear infinite;
+}
+
+#feed p {
+    display: inline;
     font-size: 3rem;
+    font-weight: 800;
     line-height: normal;
     text-transform: uppercase;
+}
+
+.feedItem {
+    padding: 1.5rem;
+}
+
+@keyframes tickerTick {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
 }
 
         /** TITLE **/
@@ -109,6 +135,23 @@
 }
 
 /**** IFRAME ****/
+
+#loadingScreen {
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    margin: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#loadingScreen img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    z-index: 0;
+}
 
 #backgroundIframe {
     width: 100%;
