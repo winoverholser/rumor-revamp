@@ -59,15 +59,16 @@ fetch(urlIcon)
     .then((res) => res.json())
     .then(({ result }) => {
 
-        const iconTray = document.getElementById("trayContainer");
+        const iconTray = document.getElementById("menu");
         iconTray.innerHTML = "";
 
         if (result.length > 0) {
             result = shuffleArray(result);
             result.forEach((iFrameLink) => {
+
                 // CREATE DIV
                 const container = document.createElement("div");
-                container.className = "trayMenu";
+                container.className = "menuItem";
 
                 // CREATE ICON
                 const icon = document.createElement("img");
@@ -77,15 +78,12 @@ fetch(urlIcon)
                     icon.src = resizedImageUrl;
                 }
                 icon.alt = iFrameLink?.title;
-                icon.className = "menuIcon";
                 container.appendChild(icon);
 
-                /*
-                    // CREATE TITLE
-                    const title = document.createElement("p");
-                    title.textContent = iFrameLink?.title;
-                    container.appendChild(title);
-                */
+                // CREATE TITLE
+                const title = document.createElement("p");
+                title.textContent = iFrameLink?.title;
+                container.appendChild(title);
 
                 // CLICK EVENT LISTENER
                 container.addEventListener("click", () => {
@@ -104,14 +102,12 @@ fetch(urlIcon)
                 iconTray.appendChild(container);
             });
         }
-        setTimeout(iconMagic, 100);  
+        setTimeout(iconMagic, 100);
     })
     .catch((err) => console.error(err));
 
 // SCALE ICONS
-window.addEventListener("resize", iconMagic);
-
-function iconMagic() {
+function iconResize() {
     // get height for resize
     const title = document.getElementById("titleText");
     const titleHeight = window.getComputedStyle(title).height;
@@ -119,12 +115,127 @@ function iconMagic() {
     const iconSize = parseFloat(titleHeight) * titleRatio + "px";
 
     // resize
-    const icons = document.querySelectorAll(".trayMenu");
+    const icons = document.querySelectorAll(".menuItem");
     icons.forEach((icon) => {
         icon.style.height = iconSize;
         icon.style.width = iconSize;
         icon.style.display = "flex";
     });
+}
+
+// RANDOMLY LOCATE ICONS
+function iconTravel() {
+    const iconTray = document.getElementById("menu");
+    const icons = iconTray.getElementsByClassName("menuItem");
+    // relocation boundary
+    const parentWidth = iconTray.offsetWidth;
+    const parentHeight = iconTray.offsetHeight;
+    // overlap boundaries
+    const iconSize = icons[0].offsetWidth;
+    const buffer = 20;
+    const maxAttempts = 42;
+    let attempts = 0;
+    // relocate each icon
+    for (let i = 0; i < icons.length; i++) {
+        let isOverlapping = false;
+        do {
+            // pick random location
+            const randomTop = Math.floor(Math.random() * (parentHeight - iconSize));
+            const randomLeft = Math.floor(Math.random() * (parentWidth - iconSize));
+            isOverlapping = false;
+            // locate previous icons
+            for (let j = 0; j < i; j++) {
+                const prevIcon = icons[j];
+                const prevTop = parseFloat(prevIcon.style.top);
+                const prevLeft = parseFloat(prevIcon.style.left);
+                // check overlap
+                if (
+                    randomTop + iconSize + buffer > prevTop &&
+                    randomTop < prevTop + iconSize + buffer &&
+                    randomLeft + iconSize + buffer > prevLeft &&
+                    randomLeft < prevLeft + iconSize + buffer
+                ) {
+                    isOverlapping = true;
+                    break;
+                }
+            }
+            // fix position
+            if (!isOverlapping || attempts >= maxAttempts) {
+                const container = icons[i];
+                container.style.position = "absolute";
+                container.style.top = `${randomTop}px`;
+                container.style.left = `${randomLeft}px`;
+            }
+            attempts++;
+        } while (isOverlapping && attempts < maxAttempts);
+    }
+}
+
+// CONNECT ICONS LIKE A CONSPIRACY CHART
+    // this breaks a lot of stuff on resizing
+function iconConnect() {
+    const iconTray = document.getElementById("menu");
+    const icons = iconTray.getElementsByClassName("menuItem");
+
+    const canvas = document.createElement("canvas");
+    iconTray.appendChild(canvas);
+    canvas.width = iconTray.offsetWidth;
+    canvas.height = iconTray.offsetHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const shuffledIcons = Array.from(icons).sort(() => Math.random() - 0.5);
+
+    // draw lines between icons
+    for (let i = 0; i < shuffledIcons.length; i++) {
+        const iconA = icons[i];
+        const maxConnections = 2;
+    
+        // pick two icons
+        const connectedIcons = [];
+        while (connectedIcons.length < maxConnections) {
+            const randomIndex = Math.floor(Math.random() * icons.length);
+            const iconB = icons[randomIndex];
+
+            if (iconA !== iconB && !connectedIcons.includes(iconB)) {
+                connectedIcons.push(iconB);
+
+                // draw line
+                const iconAX = parseFloat(iconA.style.left) + iconA.offsetWidth / 2;
+                const iconAY = parseFloat(iconA.style.top) + iconA.offsetHeight / 2;
+                const iconBX = parseFloat(iconB.style.left) + iconB.offsetWidth / 2;
+                const iconBY = parseFloat(iconB.style.top) + iconB.offsetHeight / 2;
+                // line definition
+                ctx.beginPath();
+                ctx.moveTo(iconAX, iconAY);
+                ctx.lineTo(iconBX, iconBY);
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+        }
+    }
+}
+
+// DEBOUNCE FUNCTION
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// DO THE ABOVE
+window.addEventListener("resize", debounce(iconMagic, 300));
+function iconMagic() {
+    iconResize();
+    iconTravel();
+    // iconConnect();
 }
 
 iconMagic();
@@ -133,9 +244,16 @@ iconMagic();
 
 // ***** TRAY *****
 
+
 // RETRACT TRAY
 function toggleTray() {
+    var currentFrame = document.getElementById("backgroundIframe").src;
+    if(currentFrame == `${location.href}default.html`) {
+        return;
+    };
+
     const tray = document.getElementById("tray");
+    const trayTitle = document.getElementById("trayTitle");
     tray.classList.toggle("retracted");
 
     const trayTickerHeight = document.getElementById("trayTicker").offsetHeight;
@@ -144,11 +262,16 @@ function toggleTray() {
     const translateHeight = windowHeight - trayTickerHeight - (trayTitleHeight / 2);
 
     if (tray.classList.contains("retracted")) {
+        trayTitle.classList.remove("unflipTitle");
+        void trayTitle.offsetWidth;
+        trayTitle.classList.add("flipTitle");
         tray.style.transform = `translateY(${translateHeight}px)`;
     } else {
+        trayTitle.classList.remove("flipTitle");
+        void trayTitle.offsetWidth;
+        trayTitle.classList.add("unflipTitle");
         tray.style.transform = "translateY(0)";
-        /*
-            // bounce on landing
+        // bounce on landing
             setTimeout(() => {
                 const bounceKeyframes = [
                     { transform: `translateY(0px)` },
@@ -159,7 +282,7 @@ function toggleTray() {
                 duration: 200
             });
             }, 500);
-        */
+        
     }
 }
 
