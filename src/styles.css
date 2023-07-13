@@ -62,7 +62,12 @@
     transition: transform 0.5s;
     transform: translateY(0%);
     display: flex;
+    user-select: none;
     flex-direction: column;
+}
+
+#tray img, #tray svg {
+    pointer-events: none
 }
 
         /** TICKER **/
@@ -203,7 +208,7 @@
     z-index: 2;
 }
 
-.menuItem:hover p, .menuItem:focus p {
+.menuItem:hover p, .menuItem:focus p, .menuItem:active p {
     display: block;
 }
 
