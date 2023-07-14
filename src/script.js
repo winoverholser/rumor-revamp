@@ -106,6 +106,36 @@ fetch(urlIcon)
     })
     .catch((err) => console.error(err));
 
+// IDLE CYCLE TITLES
+function cycleTitle() {
+    const iconTray = document.getElementById("menu");
+    const icons = iconTray.getElementsByClassName("menuItem");
+    let i = 0;
+
+    function nextTitle() {
+        // loop around
+        if (i >= icons.length) {
+            i = 0;
+        }
+        // pick titles
+        const currentIcon = icons[i];
+        const r = Math.floor(Math.random() * icons.length);
+        const randomIcon = icons[r];
+        const currentTitle = currentIcon.querySelector("p");
+        const randomTitle = randomIcon.querySelector("p");
+        // show title for a while
+        currentTitle.style.display = "flex";
+        randomTitle.style.display = "flex";
+        setTimeout(() => {
+            currentTitle.style.display = "none";
+            randomTitle.style.display = "none";
+            i++;
+            nextTitle();
+        }, 1000);
+    }
+    nextTitle();
+}
+
 // SCALE ICONS
 function iconResize() {
     // get height for resize
@@ -171,52 +201,6 @@ function iconTravel() {
     }
 }
 
-// CONNECT ICONS LIKE A CONSPIRACY CHART
-    // this breaks a lot of stuff on resizing
-function iconConnect() {
-    const iconTray = document.getElementById("menu");
-    const icons = iconTray.getElementsByClassName("menuItem");
-
-    const canvas = document.createElement("canvas");
-    iconTray.appendChild(canvas);
-    canvas.width = iconTray.offsetWidth;
-    canvas.height = iconTray.offsetHeight;
-
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const shuffledIcons = Array.from(icons).sort(() => Math.random() - 0.5);
-
-    // draw lines between icons
-    for (let i = 0; i < shuffledIcons.length; i++) {
-        const iconA = icons[i];
-        const maxConnections = 2;
-    
-        // pick two icons
-        const connectedIcons = [];
-        while (connectedIcons.length < maxConnections) {
-            const randomIndex = Math.floor(Math.random() * icons.length);
-            const iconB = icons[randomIndex];
-
-            if (iconA !== iconB && !connectedIcons.includes(iconB)) {
-                connectedIcons.push(iconB);
-
-                // draw line
-                const iconAX = parseFloat(iconA.style.left) + iconA.offsetWidth / 2;
-                const iconAY = parseFloat(iconA.style.top) + iconA.offsetHeight / 2;
-                const iconBX = parseFloat(iconB.style.left) + iconB.offsetWidth / 2;
-                const iconBY = parseFloat(iconB.style.top) + iconB.offsetHeight / 2;
-                // line definition
-                ctx.beginPath();
-                ctx.moveTo(iconAX, iconAY);
-                ctx.lineTo(iconBX, iconBY);
-                ctx.strokeStyle = "black";
-                ctx.lineWidth = 3;
-                ctx.stroke();
-            }
-        }
-    }
-}
-
 // DEBOUNCE FUNCTION
 function debounce(func, wait) {
     let timeout;
@@ -233,6 +217,7 @@ function debounce(func, wait) {
 // DO THE ABOVE
 window.addEventListener("resize", debounce(iconMagic, 300));
 function iconMagic() {
+    cycleTitle();
     iconResize();
     iconTravel();
     // iconConnect();
