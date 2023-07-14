@@ -133,7 +133,7 @@ function iconTravel() {
     // overlap boundaries
     const iconSize = icons[0].offsetWidth;
     const buffer = 20;
-    const maxAttempts = 42;
+    const maxAttempts = 100;
     let attempts = 0;
     // relocate each icon
     for (let i = 0; i < icons.length; i++) {

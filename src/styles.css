@@ -202,6 +202,7 @@
     bottom: 0;
     width: 100%;
     text-transform: uppercase;
+    justify-content: center;
     text-align: center;
     font-size: 2rem;
     font-weight: 800;
@@ -209,20 +210,32 @@
 }
 
 .menuItem:hover p, .menuItem:focus p, .menuItem:active p {
-    display: block;
+    display: flex;
 }
 
         /** FOOTER **/
 
 #trayFooter {
     display: flex;
+    width: 100%;
     margin-bottom: 1rem;
+    justify-content: center;
+    align-items: center;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#trayFooter a {
+    display: flex;
+    width: 60%;
+    max-width: 300px;
     justify-content: center;
     align-items: center;
 }
 
 #trayFooter img {
-    width: 75%;
+    display: flex;
+    width: 100%;
     max-width: 300px;
 }
 
