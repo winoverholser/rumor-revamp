@@ -228,7 +228,7 @@
 #trayFooter a {
     display: flex;
     width: 60%;
-    max-width: 300px;
+    max-width: 250px;
     justify-content: center;
     align-items: center;
 }
@@ -236,7 +236,7 @@
 #trayFooter img {
     display: flex;
     width: 100%;
-    max-width: 300px;
+    max-width: 250px;
 }
 
 /**** IFRAME ****/
