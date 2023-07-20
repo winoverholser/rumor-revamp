@@ -69,34 +69,25 @@ fetch(urlIcon)
                 // CREATE DIV
                 const container = document.createElement("div");
                 container.className = "menuItem";
+                container.dataset.url = iFrameLink?.url || "";
 
                 // CREATE ICON
                 const icon = document.createElement("img");
-                const imageUrl = iFrameLink?.assetUrl;
+                const imageUrl = iFrameLink?.assetUrl || "";
                 if (imageUrl) {
                     const resizedImageUrl = `${imageUrl}?w=250`;
                     icon.src = resizedImageUrl;
                 }
-                icon.alt = iFrameLink?.title;
+                icon.alt = iFrameLink?.title || "";
                 container.appendChild(icon);
 
                 // CREATE TITLE
                 const title = document.createElement("p");
-                title.textContent = iFrameLink?.title;
+                title.textContent = iFrameLink?.title || "";
                 container.appendChild(title);
 
                 // CLICK EVENT LISTENER
-                container.addEventListener("click", () => {
-                    const iframe = document.getElementById("backgroundIframe");
-                    const loadingScreen = document.getElementById("loadingScreen");
-                    // loading screen
-                    loadingScreen.style.display = "flex";
-                    iframe.onload = () => {
-                        loadingScreen.style.display = "none";
-                    };
-                    iframe.src = iFrameLink?.url;
-                    toggleTray();
-                });
+                container.addEventListener("mousedown", iconDragStart);
 
                 // ADD TO TRAY
                 iconTray.appendChild(container);
@@ -214,6 +205,107 @@ function debounce(func, wait) {
     };
 }
 
+// DRAG ICONS
+document.addEventListener("mousemove", iconDragMove);
+document.addEventListener("mouseup", iconDragEnd);
+
+let isDragging = false;
+let dragStartPos = { x: 0, y: 0 };
+let dragStartTime = null;
+let currentIcon = null;
+let scheduledAnimationFrame = false;
+
+    // start dragging
+function iconDragStart(event) {
+    console.log("Drag started");
+    isDragging = true;
+    dragStartPos = { x: event.clientX, y: event.clientY };
+    dragStartTime = new Date().getTime();
+    currentIcon = event.currentTarget;
+
+    const currentTransform = currentIcon.style.transform.match(/translate\(([^)]+)\)/);
+    if (currentTransform && currentTransform[1]) {
+        const parts = currentTransform[1].split(",");
+        currentIcon.initialTranslate = { 
+            x: parseFloat(parts[0]), 
+            y: parseFloat(parts[1])
+        };
+    } else {
+        currentIcon.initialTranslate = { x: 0, y: 0 };
+    }
+    
+    event.preventDefault();
+    event.stopPropagation(); 
+}
+// during dragging
+function iconDragMove(event) {
+    if (!isDragging || !currentIcon) return;
+    console.log("Dragging!");
+// location & translation
+    const dx = event.clientX - dragStartPos.x;
+    const dy = event.clientY - dragStartPos.y;
+    const currentTransform = currentIcon.style.transform.match(/translate\(([^)]+)\)/);
+    let currentTranslate = { x: 0, y: 0 };
+    if (currentTransform && currentTransform[1]) {
+        const parts = currentTransform[1].split(", ");
+        currentTranslate.x = parseFloat(parts[0]);
+        currentTranslate.y = parseFloat(parts[1]);
+    }
+    let newTranslateX = currentTranslate.x + dx;
+    let newTranslateY = currentTranslate.y + dy;
+// areas
+    const iconTray = document.getElementById("menu");
+    const containerWidth = iconTray.offsetWidth;
+    const containerHeight = iconTray.offsetHeight;
+    const iconWidth = currentIcon.offsetWidth;
+    const iconHeight = currentIcon.offsetHeight;
+// boundary definition
+    const boundaryTop = 0 - currentTranslate.y;
+    const boundaryBottom = containerHeight - iconHeight - currentTranslate.y;
+    const boundaryLeft = 0 - currentTranslate.x;
+    const boundaryRight = containerWidth - iconWidth - currentTranslate.x;
+// boundary check
+    if (newTranslateY < boundaryTop || newTranslateY > boundaryBottom || newTranslateX < boundaryLeft || newTranslateX > boundaryRight) {
+        dragStartPos = { x: event.clientX, y: event.clientY };
+        return;
+    }
+// clamp to boundary
+    const clampedTranslateX = Math.min(Math.max(newTranslateX, boundaryLeft), boundaryRight);
+    const clampedTranslateY = Math.min(Math.max(newTranslateY, boundaryTop), boundaryBottom);
+// animate smoothly
+    scheduledAnimationFrame = true;
+    requestAnimationFrame(() => {
+        currentIcon.style.transform = `translate(${clampedTranslateX}px, ${clampedTranslateY}px)`;
+        dragStartPos = { x: event.clientX, y: event.clientY };
+        scheduledAnimationFrame = false;
+    });
+}
+
+    // end dragging
+function iconDragEnd(event) {
+    if (!isDragging || !currentIcon) return;
+
+    console.log("Drag ended");
+    const dragEndTime = new Date().getTime();
+    const duration = dragEndTime - dragStartTime;
+
+    if (duration < 200) {
+        const iframe = document.getElementById("backgroundIframe");
+        const loadingScreen = document.getElementById("loadingScreen");
+        loadingScreen.style.display = "flex";
+        iframe.src = currentIcon.dataset.url;
+        iframe.onload = () => {
+            loadingScreen.style.display = "none";
+        };
+        toggleTray();
+    }
+
+    if (currentIcon) currentIcon.initialTranslate = null;
+    isDragging = false;
+    currentIcon = null;
+    
+}
+
 // DO THE ABOVE
 window.addEventListener("resize", debounce(iconMagic, 300));
 function iconMagic() {
@@ -223,7 +315,9 @@ function iconMagic() {
     // iconConnect();
 }
 
-iconMagic();
+document.addEventListener("DOMContentLoaded", () => {
+    iconMagic();
+});
 
 
 
