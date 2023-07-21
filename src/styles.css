@@ -184,9 +184,11 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    vertical-align: middle;
 }
   
 .menuItem {
+    position: absolute;
     display: none;
     min-width: 50px;
     min-height: 50px;   
