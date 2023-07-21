@@ -74,7 +74,7 @@ fetch(urlIcon)
                 const icon = document.createElement("img");
                 const imageUrl = iFrameLink?.assetUrl;
                 if (imageUrl) {
-                    const resizedImageUrl = `${imageUrl}?w=250`;
+                    const resizedImageUrl = `${imageUrl}?w=200`;
                     icon.src = resizedImageUrl;
                 }
                 icon.alt = iFrameLink?.title;
@@ -142,13 +142,13 @@ function iconResize() {
     const title = document.getElementById("titleText");
     const titleHeight = window.getComputedStyle(title).height;
     const titleRatio = 15 / 11.9525;
-    const iconSize = parseFloat(titleHeight) * titleRatio + "px";
+    const calculatedWidth = parseFloat(titleHeight) * titleRatio;
+    const iconWidth = calculatedWidth + "px";
 
     // resize
     const icons = document.querySelectorAll(".menuItem");
     icons.forEach((icon) => {
-        icon.style.height = iconSize;
-        icon.style.width = iconSize;
+        icon.style.width = iconWidth;
         icon.style.display = "flex";
     });
 }
@@ -160,19 +160,23 @@ function iconTravel() {
     // relocation boundary
     const parentWidth = iconTray.offsetWidth;
     const parentHeight = iconTray.offsetHeight;
-    // overlap boundaries
-    const iconSize = icons[0].offsetWidth;
-    const buffer = 20;
-    const maxAttempts = 100;
-    let attempts = 0;
+    const buffer = 10;
+    const maxAttempts = 200;
+    
     // relocate each icon
     for (let i = 0; i < icons.length; i++) {
+        const currentIcon = icons[i];
+        const iconWidth = currentIcon.offsetWidth;
+        const iconHeight = currentIcon.offsetHeight;
+        
+        let attempts = 0;
         let isOverlapping = false;
         do {
             // pick random location
-            const randomTop = Math.floor(Math.random() * (parentHeight - iconSize));
-            const randomLeft = Math.floor(Math.random() * (parentWidth - iconSize));
+            const randomTop = Math.floor(Math.random() * (parentHeight - iconHeight - buffer));
+            const randomLeft = Math.floor(Math.random() * (parentWidth - iconWidth - buffer));
             isOverlapping = false;
+            
             // locate previous icons
             for (let j = 0; j < i; j++) {
                 const prevIcon = icons[j];
@@ -180,10 +184,10 @@ function iconTravel() {
                 const prevLeft = parseFloat(prevIcon.style.left);
                 // check overlap
                 if (
-                    randomTop + iconSize + buffer > prevTop &&
-                    randomTop < prevTop + iconSize + buffer &&
-                    randomLeft + iconSize + buffer > prevLeft &&
-                    randomLeft < prevLeft + iconSize + buffer
+                    randomTop + iconHeight + buffer > prevTop &&
+                    randomTop < prevTop + iconHeight + buffer &&
+                    randomLeft + iconWidth + buffer > prevLeft &&
+                    randomLeft < prevLeft + iconWidth + buffer
                 ) {
                     isOverlapping = true;
                     break;
@@ -191,15 +195,15 @@ function iconTravel() {
             }
             // fix position
             if (!isOverlapping || attempts >= maxAttempts) {
-                const container = icons[i];
-                container.style.position = "absolute";
-                container.style.top = `${randomTop}px`;
-                container.style.left = `${randomLeft}px`;
+                currentIcon.style.position = "absolute";
+                currentIcon.style.top = `${randomTop}px`;
+                currentIcon.style.left = `${randomLeft}px`;
             }
             attempts++;
         } while (isOverlapping && attempts < maxAttempts);
     }
 }
+
 
 // DEBOUNCE FUNCTION
 function debounce(func, wait) {
@@ -223,8 +227,9 @@ function iconMagic() {
     // iconConnect();
 }
 
-iconMagic();
-
+iconMagic();document.addEventListener("DOMContentLoaded", () => {
+    iconMagic();
+});
 
 
 // ***** TRAY *****
