@@ -149,7 +149,7 @@ function iconResize() {
     const icons = document.querySelectorAll(".menuItem");
     icons.forEach((icon) => {
         icon.style.width = iconWidth;
-        icon.style.display = "flex";
+        icon.style.display = "block";
     });
 }
 
@@ -176,7 +176,7 @@ function iconTravel() {
             const randomTop = Math.floor(Math.random() * (parentHeight - iconHeight - buffer));
             const randomLeft = Math.floor(Math.random() * (parentWidth - iconWidth - buffer));
             isOverlapping = false;
-            
+        
             // locate previous icons
             for (let j = 0; j < i; j++) {
                 const prevIcon = icons[j];

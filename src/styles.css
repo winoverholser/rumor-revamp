@@ -119,7 +119,12 @@
 #trayTitle {
     max-height: 200px;
     padding: 20px;
-    margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    #trayTitle {
+        padding: 10px;
+    }
 }
 
 .flipTitle {
@@ -168,6 +173,9 @@
         /** ICONS **/
 
 #trayContainer {
+    height: 100%;
+    width: 100vw;
+    padding-bottom: 8%;
     flex: 1;
     display: flex;
     flex-wrap: wrap;
@@ -177,8 +185,8 @@
 
 #menu {
     position: relative;
+    width: 90%;
     height: 100%;
-    width: 100vw;
     max-width: 1200px;
     display: flex;
     flex-wrap: wrap;
@@ -217,6 +225,7 @@
 
 .menuItem:hover p, .menuItem:focus p, .menuItem:active p {
     display: flex;
+    cursor: grabbing;
 }
 
         /** FOOTER **/
