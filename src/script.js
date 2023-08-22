@@ -224,15 +224,65 @@ function iconMagic() {
     cycleTitle();
     iconResize();
     iconTravel();
-    // iconConnect();
 }
 
-iconMagic();document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', function() {
     iconMagic();
-});
-
+})
 
 // ***** TRAY *****
+
+// SWIPE LISTENER
+
+let startY;
+let endY;
+const thresholdY = 30;
+
+function getSwipeDirection(start, end) {
+    return start < end ? 'down' : 'up' ;
+};
+
+function onStart(event) {
+    const y = (event.touches && event.touches[0].clientY) || event.clientY;
+    startY = y;
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onEnd);
+
+    document.addEventListener('touchmove', onMove);
+    document.addEventListener('touchend', onEnd);
+};
+
+function onMove(event) {
+    const y = (event.touches && event.touches[0].clientY) || event.clientY;
+    endY = y;
+};
+
+function onEnd() {
+    const deltaY = Math.abs(endY - startY);
+
+    if (deltaY > thresholdY) {
+        const direction = getSwipeDirection(startY, endY);
+        const tray = document.getElementById('tray');
+        const isRetracted = tray.classList.contains('retracted');
+
+        if ((direction === 'up' && isRetracted) || (direction === 'down' && !isRetracted)) {
+            toggleTray();
+        }
+    }
+
+    startY = null;
+    endY = null;
+
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onEnd);
+
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onEnd);
+}
+
+document.getElementById('tray').addEventListener('mousedown', onStart);
+document.getElementById('tray').addEventListener('touchstart', onStart);
 
 
 // RETRACT TRAY

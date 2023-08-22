@@ -10,33 +10,33 @@
   <body>
     <main>
     <div id="tray">
-        <div id="trayTicker" onclick="toggleTray()">
-            <div id="feed">
-                <!-- Ticker is dynamic -->
-                <p>
-                    tk tk tk tk tk tk tk tk tk tk tk tk tk tk tk 
-                    tk tk tk tk tk tk tk tk tk tk tk tk tk tk tk
-                </p>
-            </div>
-        </div>
-        <div id="trayTitle" onclick="toggleTray()">
-            <img id="titleText" src="img/ambigram-horizontal.svg">
-        </div>
-        <div id="trayContainer">
-          <div id="menu">
-            <!-- Icons are dynamic -->
-            <p>Icons incoming</p>
+      <div id="trayTicker" onclick="toggleTray()">
+          <div id="feed">
+              <!-- Ticker is dynamic -->
+              <p>
+                  tk tk tk tk tk tk tk tk tk tk tk tk tk tk tk 
+                  tk tk tk tk tk tk tk tk tk tk tk tk tk tk tk
+              </p>
           </div>
+      </div>
+      <div id="trayTitle" onclick="toggleTray()">
+          <img id="titleText" src="img/ambigram-horizontal.svg">
+      </div>
+      <div id="trayContainer">
+        <div id="menu">
+          <!-- Icons are dynamic -->
+          <p>Icons incoming</p>
         </div>
-        <div id="trayFooter">
-          <a href="https://soa.princeton.edu/">
-            <img alt="Princeton School of Architecture" src="img/PSoA.png">
-          </a>
-        </div>
+      </div>
+      <div id="trayFooter">
+        <a href="https://soa.princeton.edu/">
+          <img alt="Princeton School of Architecture" src="img/PSoA.png">
+        </a>
+      </div>
     </div>
     </main>
 
-    <div id="loadingScreen"><img src="img/rumor-circle-rotate.gif"></div>
+    <div id="loadingScreen"><div id="loadingText"><p>LOADING</p></div><img src="img/rumor-circle-rotate.gif"></div>
     <iframe id="backgroundIframe" src="default.html"></iframe>
 
     <script src="src/script.js"></script>
