@@ -55,6 +55,11 @@ fetch(urlTicker)
 
 // ***** ICONS *****
 
+let defaultPage = true;
+function defaultReset() {
+    defaultPage = true;
+}
+
 fetch(urlIcon)
     .then((res) => res.json())
     .then(({ result }) => {
@@ -95,6 +100,7 @@ fetch(urlIcon)
                         loadingScreen.style.display = "none";
                     };
                     iframe.src = iFrameLink?.url;
+                    defaultPage = false;
                     toggleTray();
                 });
 
@@ -286,14 +292,13 @@ tray.addEventListener('mousedown', onStart);
 tray.addEventListener('touchstart', onStart);
 tray.classList.contains("retracted").addEventListener('click', toggleTray);
 
-
 // RETRACT TRAY
 function toggleTray() {
     var currentFrame = document.getElementById("backgroundIframe").src;
     const tray = document.getElementById("tray");
     const trayTitle = document.getElementById("trayTitle");
 
-    if(currentFrame == `${location.href}default.html` && !tray.classList.contains("retracted")) {
+    if(defaultPage == true && !tray.classList.contains("retracted")) {
         return;
     };
 
@@ -324,6 +329,7 @@ function toggleTray() {
             tray.animate(bounceKeyframes, {
                 duration: 200
             });
+            iconMagic();
             }, 500);
         
     }
