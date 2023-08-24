@@ -112,8 +112,12 @@ fetch(urlIcon)
     })
     .catch((err) => console.error(err));
 
-// IDLE CYCLE TITLES
+// IDLE CYCLE TITLES (TIMER)
+let cycleTimeout = null;
 function cycleTitle() {
+    if (cycleTimeout) {
+        clearTimeout(cycleTimeout);
+    }
     const iconTray = document.getElementById("menu");
     const icons = iconTray.getElementsByClassName("menuItem");
     let i = 0;
@@ -127,17 +131,34 @@ function cycleTitle() {
         const currentIcon = icons[i];
         const r = Math.floor(Math.random() * icons.length);
         const randomIcon = icons[r];
+        console.log(i,r);
         const currentTitle = currentIcon.querySelector("p");
         const randomTitle = randomIcon.querySelector("p");
         // show title for a while
         currentTitle.style.display = "flex";
         randomTitle.style.display = "flex";
-        setTimeout(() => {
+        cycleTimeout = setTimeout(() => {
             currentTitle.style.display = "none";
             randomTitle.style.display = "none";
             i++;
             nextTitle();
         }, 1000);
+        // BOUNCE RETRACTED TRAYa
+        if (document.getElementById("tray").classList.contains("retracted") && (i == 0 || r == 0)) {
+            const trayTickerHeight = document.getElementById("trayTicker").offsetHeight;
+            const trayTitleHeight = document.getElementById("trayTitle").offsetHeight;
+            const windowHeight = window.innerHeight;
+            const translateHeight = windowHeight - trayTickerHeight - (trayTitleHeight / 2);
+            const bounceHeight = translateHeight - (trayTickerHeight / 5);
+            const bounceKeyframes = [
+                { transform: `translateY(${translateHeight}px)` },
+                { transform: `translateY(${bounceHeight}px)` },
+                { transform: `translateY(${translateHeight}px)` }
+            ];
+            tray.animate(bounceKeyframes, {
+                duration: 500
+            });
+        }
     }
     nextTitle();
 }
