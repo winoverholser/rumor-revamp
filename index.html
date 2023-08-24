@@ -1,14 +1,30 @@
 <!DOCTYPE html>
 <html>
   <head>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3JFZM8EDWN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-3JFZM8EDWN');
+    </script>
+ 
     <title>RUMOR</title>
+    <meta name="description" content="Rumor is a monthly review of 21st-century architecture edited by students at Princeton University School of Architecture.">
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="src/styles.css" />
+
   </head>
 
   <body>
     <main>
+    <div id="about">
+      <p>Rumor is a monthly review of 21st-century architecture edited by students at Princeton University School of Architecture.</p>
+    </div>
     <div id="tray">
       <div id="trayTicker">
           <div id="feed">
@@ -20,7 +36,7 @@
           </div>
       </div>
       <div id="trayTitle">
-          <img id="titleText" src="img/ambigram-horizontal.svg">
+          <img id="titleText" src="img/ambigram-horizontal.svg" alt="Rumor ambigram">
       </div>
       <div id="trayContainer">
         <div id="menu">
@@ -36,9 +52,14 @@
     </div>
     </main>
 
-    <div id="loadingScreen"><div id="loadingText"><p>LOADING</p></div><img src="img/rumor-circle-rotate.gif"></div>
+    <div id="loadingScreen"><div id="loadingText"><p>LOADING</p></div><img src="img/rumor-circle-rotate.gif" alt="Loading animation"></div>
     <iframe id="backgroundIframe" src="default.html"></iframe>
 
     <script src="src/script.js"></script>
   </body>
 </html>
+
+<!--
+  Website design by Winfred Ovur: http://oeuvre.win
+  Inspired by original design by Will Rhodes: http://willrhodes.blue
+-->

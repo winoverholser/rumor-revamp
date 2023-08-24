@@ -31,4 +31,12 @@
     <p>psst<br/><br/>click an icon</p>
 </div>
 </body>
+
+<script src="src/script.js"></script>
+<script>
+if (window.parent.document.getElementById("tray").classList.contains("retracted")) {
+    window.parent.toggleTray()
+}
+</script>
+
 </html>

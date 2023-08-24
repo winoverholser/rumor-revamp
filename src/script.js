@@ -281,19 +281,22 @@ function onEnd() {
     document.removeEventListener('touchend', onEnd);
 }
 
-document.getElementById('tray').addEventListener('mousedown', onStart);
-document.getElementById('tray').addEventListener('touchstart', onStart);
+const tray = document.getElementById("tray");
+tray.addEventListener('mousedown', onStart);
+tray.addEventListener('touchstart', onStart);
+tray.classList.contains("retracted").addEventListener('click', toggleTray);
 
 
 // RETRACT TRAY
 function toggleTray() {
     var currentFrame = document.getElementById("backgroundIframe").src;
-    if(currentFrame == `${location.href}default.html`) {
+    const tray = document.getElementById("tray");
+    const trayTitle = document.getElementById("trayTitle");
+
+    if(currentFrame == `${location.href}default.html` && !tray.classList.contains("retracted")) {
         return;
     };
 
-    const tray = document.getElementById("tray");
-    const trayTitle = document.getElementById("trayTitle");
     tray.classList.toggle("retracted");
 
     const trayTickerHeight = document.getElementById("trayTicker").offsetHeight;
