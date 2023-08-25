@@ -131,7 +131,6 @@ function cycleTitle() {
         const currentIcon = icons[i];
         const r = Math.floor(Math.random() * icons.length);
         const randomIcon = icons[r];
-        console.log(i,r);
         const currentTitle = currentIcon.querySelector("p");
         const randomTitle = randomIcon.querySelector("p");
         // show title for a while
@@ -143,21 +142,13 @@ function cycleTitle() {
             i++;
             nextTitle();
         }, 1000);
-        // BOUNCE RETRACTED TRAYa
+        // BOUNCE RETRACTED TRAY
+        const trayTitle = document.getElementById("trayTitle");
         if (document.getElementById("tray").classList.contains("retracted") && (i == 0 || r == 0)) {
-            const trayTickerHeight = document.getElementById("trayTicker").offsetHeight;
-            const trayTitleHeight = document.getElementById("trayTitle").offsetHeight;
-            const windowHeight = window.innerHeight;
-            const translateHeight = windowHeight - trayTickerHeight - (trayTitleHeight / 2);
-            const bounceHeight = translateHeight - (trayTickerHeight / 5);
-            const bounceKeyframes = [
-                { transform: `translateY(${translateHeight}px)` },
-                { transform: `translateY(${bounceHeight}px)` },
-                { transform: `translateY(${translateHeight}px)` }
-            ];
-            tray.animate(bounceKeyframes, {
-                duration: 500
-            });
+            trayTitle.classList.remove("flipTitle");
+            trayTitle.classList.remove("peekTitle");
+            void trayTitle.offsetWidth;
+            trayTitle.classList.add("peekTitle");
         }
     }
     nextTitle();
@@ -330,6 +321,8 @@ function toggleTray() {
     const windowHeight = window.innerHeight;
     const translateHeight = windowHeight - trayTickerHeight - (trayTitleHeight / 2);
 
+    trayTitle.classList.remove("peekTitle");
+    
     if (tray.classList.contains("retracted")) {
         trayTitle.classList.remove("unflipTitle");
         void trayTitle.offsetWidth;
