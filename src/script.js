@@ -1,4 +1,4 @@
-// SANITY PROJECT
+// SANITY PROJECT (HEADLESS CMS FOR ICONS & TICKER)
 
 let PROJECT_ID = "1u261ldt";
 let DATASET = "production";
@@ -9,7 +9,7 @@ let urlTicker = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DA
 let queryIcon = encodeURIComponent('*[_type == "iFrameLink"]{title,url,thumb,"assetUrl": thumb.asset->url}');
 let urlIcon = `https://${PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${DATASET}?query=${queryIcon}`;
 
-// SHUFFLE
+// SHUFFLE IMPORTED DATA
 
 function shuffleArray(array) {
     // Fisher-Yates shuffle algorithm
@@ -22,29 +22,30 @@ function shuffleArray(array) {
 
 // ***** TICKER *****
 
+// GET DATA
 fetch(urlTicker)
     .then((res) => res.json())
     .then(({ result }) => {
-
+        // TICKER LOCATION
         const tickerTray = document.getElementById("feed");
         tickerTray.innerHTML = "";
         let tickerWidth = 0;
-
+        // SHUFFLE DATA & POPULATE LOCATION
         if (result.length > 0) {
             result = shuffleArray(result);
             result.forEach((ticker) => {
                 // CREATE SPAN
                 const container = document.createElement("span");
                 container.className = "feedItem";
-                // ADD TEXT
+                // ADD TEXT TO SPAN
                 const rumor = document.createElement("p");
                 rumor.innerText = ticker?.tickerText
                 container.appendChild(rumor);
                 tickerTray.appendChild(container);
-                // ADD UP LENGTH
+                // ADD UP LENGTH FOR ANIMATION
                 tickerWidth += container.offsetWidth;
             })
-            // TRANSLATE LEFT
+            // ANIMATE TICKER LEFT
             tickerTray.style.width = `${tickerWidth}px`;
             const duration = tickerWidth * .008;
             tickerTray.style.animationDuration = `${duration}s`;
@@ -55,27 +56,27 @@ fetch(urlTicker)
 
 // ***** ICONS *****
 
+// EXTEND TRAY ON DEFAULT PAGE
 let defaultPage = true;
 function defaultReset() {
     defaultPage = true;
 }
 
+// GET DATA
 fetch(urlIcon)
     .then((res) => res.json())
     .then(({ result }) => {
-
+        // ICON LOCATION
         const iconTray = document.getElementById("menu");
         iconTray.innerHTML = "";
-
+        // SHUFFLE DATA & POPULATE LOCATION
         if (result.length > 0) {
             result = shuffleArray(result);
             result.forEach((iFrameLink) => {
-
-                // CREATE DIV
+                // CREATE DIV FOR MENU ITEMS
                 const container = document.createElement("div");
                 container.className = "menuItem";
-
-                // CREATE ICON
+                // CREATE ICONS
                 const icon = document.createElement("img");
                 const imageUrl = iFrameLink?.assetUrl;
                 if (imageUrl) {
@@ -84,17 +85,15 @@ fetch(urlIcon)
                 }
                 icon.alt = iFrameLink?.title;
                 container.appendChild(icon);
-
-                // CREATE TITLE
+                // CREATE TITLES
                 const title = document.createElement("p");
                 title.textContent = iFrameLink?.title;
                 container.appendChild(title);
-
                 // CLICK EVENT LISTENER
                 container.addEventListener("click", () => {
                     const iframe = document.getElementById("backgroundIframe");
                     const loadingScreen = document.getElementById("loadingScreen");
-                    // loading screen
+                    // SHOW LOADING SCREEN
                     loadingScreen.style.display = "flex";
                     iframe.onload = () => {
                         loadingScreen.style.display = "none";
@@ -103,8 +102,7 @@ fetch(urlIcon)
                     defaultPage = false;
                     toggleTray();
                 });
-
-                // ADD TO TRAY
+                // ADD ALL TO TRAY
                 iconTray.appendChild(container);
             });
         }
@@ -121,13 +119,13 @@ function cycleTitle() {
     const iconTray = document.getElementById("menu");
     const icons = iconTray.getElementsByClassName("menuItem");
     let i = 0;
-
+    // LOOP
     function nextTitle() {
-        // loop around
+        // loop around title list
         if (i >= icons.length) {
             i = 0;
         }
-        // pick titles
+        // pick titles to show
         const currentIcon = icons[i];
         const r = Math.floor(Math.random() * icons.length);
         const randomIcon = icons[r];
@@ -162,7 +160,6 @@ function iconResize() {
     const titleRatio = 15 / 11.9525;
     const calculatedWidth = parseFloat(titleHeight) * titleRatio;
     const iconWidth = calculatedWidth + "px";
-
     // resize
     const icons = document.querySelectorAll(".menuItem");
     icons.forEach((icon) => {
@@ -179,14 +176,13 @@ function iconTravel() {
     const parentWidth = iconTray.offsetWidth;
     const parentHeight = iconTray.offsetHeight;
     const buffer = 10;
-    const maxAttempts = 200;
-    
+    const maxAttempts = 200; // this limits how long the operation has to succeed
     // relocate each icon
     for (let i = 0; i < icons.length; i++) {
         const currentIcon = icons[i];
         const iconWidth = currentIcon.offsetWidth;
         const iconHeight = currentIcon.offsetHeight;
-        
+        // reset attempt counter
         let attempts = 0;
         let isOverlapping = false;
         do {
@@ -194,13 +190,12 @@ function iconTravel() {
             const randomTop = Math.floor(Math.random() * (parentHeight - iconHeight - buffer));
             const randomLeft = Math.floor(Math.random() * (parentWidth - iconWidth - buffer));
             isOverlapping = false;
-        
             // locate previous icons
             for (let j = 0; j < i; j++) {
                 const prevIcon = icons[j];
                 const prevTop = parseFloat(prevIcon.style.top);
                 const prevLeft = parseFloat(prevIcon.style.left);
-                // check overlap
+                // check for overlap between random and previous locations
                 if (
                     randomTop + iconHeight + buffer > prevTop &&
                     randomTop < prevTop + iconHeight + buffer &&
@@ -222,8 +217,7 @@ function iconTravel() {
     }
 }
 
-
-// DEBOUNCE FUNCTION
+// DEBOUNCE FUNCTION (TO PREVENT JANKY MOVEMENT)
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -236,93 +230,99 @@ function debounce(func, wait) {
     };
 }
 
-// DO THE ABOVE
+// DO ALL THE ABOVE
 window.addEventListener("resize", debounce(iconMagic, 300));
 function iconMagic() {
     cycleTitle();
     iconResize();
     iconTravel();
 }
-
+// RUN EVERYTHING ONCE PAGE LOADS
 document.addEventListener('DOMContentLoaded', function() {
     iconMagic();
 })
 
+
 // ***** TRAY *****
+const tray = document.getElementById("tray");
 
-// SWIPE LISTENER
+// SHUFFLE ICONS ON TITLE CLICK
+document.getElementById("trayTitle").addEventListener("click", shuffleIcons);
+function shuffleIcons() {
+    if (tray.classList.contains("retracted")) {
+        toggleTray();
+    } else {
+        iconMagic();
+    }
+}
 
+// SWIPE FOR TRAY RETRACTION
 let startY;
 let endY;
 const thresholdY = 30;
-
+// GET SWIPE DIRECTION
 function getSwipeDirection(start, end) {
     return start < end ? 'down' : 'up' ;
 };
-
+// SWIPE START
 function onStart(event) {
     const y = (event.touches && event.touches[0].clientY) || event.clientY;
     startY = y;
-
+    endY = y;
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onEnd);
-
     document.addEventListener('touchmove', onMove);
     document.addEventListener('touchend', onEnd);
 };
-
+// SWIPE ITSELF
 function onMove(event) {
     const y = (event.touches && event.touches[0].clientY) || event.clientY;
     endY = y;
 };
-
+// END OF SWIPE
 function onEnd() {
     const deltaY = Math.abs(endY - startY);
-
+    // WAS THE SWIPE LONG ENOUGH?
     if (deltaY > thresholdY) {
         const direction = getSwipeDirection(startY, endY);
         const tray = document.getElementById('tray');
         const isRetracted = tray.classList.contains('retracted');
-
+        // TOGGLE BASED ON SWIPE DIRECTION
         if ((direction === 'up' && isRetracted) || (direction === 'down' && !isRetracted)) {
             toggleTray();
         }
     }
-
+    // RESET SWIPE DATA
     startY = null;
     endY = null;
-
     document.removeEventListener('mousemove', onMove);
     document.removeEventListener('mouseup', onEnd);
-
     document.removeEventListener('touchmove', onMove);
     document.removeEventListener('touchend', onEnd);
 }
-
-const tray = document.getElementById("tray");
+// SWIPE LISTENERS
 tray.addEventListener('mousedown', onStart);
 tray.addEventListener('touchstart', onStart);
-tray.classList.contains("retracted").addEventListener('click', toggleTray);
 
 // RETRACT TRAY
 function toggleTray() {
     var currentFrame = document.getElementById("backgroundIframe").src;
     const tray = document.getElementById("tray");
     const trayTitle = document.getElementById("trayTitle");
-
+    // NO RETRACTION ON DEFAULT PAGE, NOR IF ALREADY RETRACTED
     if(defaultPage == true && !tray.classList.contains("retracted")) {
         return;
     };
-
+    // RETRACT
     tray.classList.toggle("retracted");
-
+    // RETRACT DISTANCE
     const trayTickerHeight = document.getElementById("trayTicker").offsetHeight;
     const trayTitleHeight = document.getElementById("trayTitle").offsetHeight;
     const windowHeight = window.innerHeight;
     const translateHeight = windowHeight - trayTickerHeight - (trayTitleHeight / 2);
-
+    // REMOVE IDLE RETRACTED ANIMATION
     trayTitle.classList.remove("peekTitle");
-    
+    // RETRACTION ANIMATION TOGGLE
     if (tray.classList.contains("retracted")) {
         trayTitle.classList.remove("unflipTitle");
         void trayTitle.offsetWidth;
@@ -333,7 +333,7 @@ function toggleTray() {
         void trayTitle.offsetWidth;
         trayTitle.classList.add("unflipTitle");
         tray.style.transform = "translateY(0)";
-        // bounce on landing
+        // bounce on landing (totally unnecessary)
             setTimeout(() => {
                 const bounceKeyframes = [
                     { transform: `translateY(0px)` },
@@ -353,12 +353,12 @@ function toggleTray() {
 window.addEventListener("resize", function() {
     const tray = document.getElementById("tray");
     const isRetracted = tray.classList.contains("retracted");
-    
+    // DUPLICATE CODE FOR RETRACTION DISTANCE...
     const trayTickerHeight = document.getElementById("trayTicker").offsetHeight;
     const trayTitleHeight = document.getElementById("trayTitle").offsetHeight;
     const windowHeight = window.innerHeight;
     const translateHeight = windowHeight - trayTickerHeight - (trayTitleHeight / 2);
-
+    // FIX DISTANCE ON RESIZE
     if (isRetracted) {
         tray.style.transform = `translateY(${translateHeight}px)`;
     }
